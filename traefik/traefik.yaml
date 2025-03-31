@@ -1,0 +1,64 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+entryPoints:
+  web:
+    address: ":80"    # Internal port (mapped to 81 externally)
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: cloudflare
+        domains:
+          - main: "yourdomain.com"
+            sans:
+              - "yourdomain.com"
+
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: your@email.com
+      storage: /etc/traefik/acme/cloudflare.json
+      dnsChallenge:
+        provider: cloudflare
+        delayBeforeCheck: 60
+        resolvers:
+          - "1.1.1.1:53"
+          - "1.0.0.1:53"
+          - "8.8.8.8:53"
+      preferredChain: "ISRG Root X1"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    network: traefik-with-n8n
+  file:
+    directory: /etc/traefik/config
+    watch: true
+
+# Security headers middleware (create as /etc/traefik/config/security-headers.yml)
+# http:
+#   middlewares:
+#     security-headers:
+#       headers:
+#         sslRedirect: true
+#         stsSeconds: 31536000
+#         browserXssFilter: true
+#         contentTypeNosniff: true
+#         frameDeny: true
+#         stsIncludeSubdomains: true
+#         stsPreload: true
+
+log:
+  level: DEBUG
+  format: json
+
+accessLog:
+  format: json
