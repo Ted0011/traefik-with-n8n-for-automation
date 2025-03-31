@@ -1,4 +1,4 @@
-traefik/config/cloudflare.env
-n8n-data
-postgres-data
-traefik/acme
+./traefik/config/cloudflare.env
+./n8n-data
+./postgres-data
+./traefik/acme
