@@ -1,0 +1,22 @@
+#IF YOU WANT TRAEFIK WITH OTHER WEBSITES HOSTED ON PREMISE HERE IS WHAT YOU HAVE TO DO....
+#CREATE ANOTHER FILE INSIDE THE CONFIG DIRECTORY AND RUN THE DOCKER BUILD AND THEN DOCKER COMPOSE UP 
+#FOR TROUBLESHOOTING WE DON'T RUN THE DOCKER COMPOSE UP IN DAEMON MODE....
+#REPLACE SERVICE NAME WITH THE YOU DESIRE
+http:
+  routers:
+    service_name:
+      rule: "Host(`sub-domain.yourdomain.com`)" # UPDATE IT TO YOUR OWN LIKING
+      entryPoints:
+        - "websecure"
+      tls:
+        certResolver: cloudflare
+      service: service_name
+  services:
+    service_name:
+      loadBalancer:
+        servers:
+          - url: "local_server_address" # CHANGE THIS
+        serversTransport: insecure-skip-verify
+  serversTransports:
+    insecure-skip-verify:
+      insecureSkipVerify: true
